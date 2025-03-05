@@ -20,7 +20,10 @@ app.post('/upload', upload.single('file'), async (req, res) => {
   try {
     const filePath = file.path;
     const fileContent = fs.readFileSync(filePath);
-    const { url, blobId } = await put(file.originalname, fileContent, { access: 'public' });
+    const { url, blobId } = await put(file.originalname, fileContent, {
+      access: 'public',
+      token: process.env.BLOB_READ_WRITE_TOKEN // Lisää tämä rivi
+    });
 
     // Poista väliaikainen tiedosto
     fs.unlinkSync(filePath);
