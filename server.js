@@ -3,7 +3,7 @@ const multer = require('multer');
 const axios = require('axios');
 const path = require('path');
 const fs = require('fs');
-const FormData = require('form-data');  // Lisää tämä
+const FormData = require('form-data');  // LisÃ¤Ã¤ tÃ¤mÃ¤
 
 const app = express();
 const upload = multer({ dest: 'uploads/' });
@@ -22,7 +22,7 @@ app.post('/upload', upload.single('file'), async (req, res) => {
     const form = new FormData();
     form.append('file', fs.createReadStream(file.path), file.originalname);
 
-    const response = await axios.post('https://your-vercel-api-endpoint/upload', form, {
+    const response = await axios.post('https://vercelblob-eight.vercel.app/api/upload', form, {
       headers: form.getHeaders()
     });
 
