@@ -14,27 +14,37 @@ app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));
 });
 
-console.log('BLOB_READ_WRITE_TOKEN:', process.env.BLOB_READ_WRITE_TOKEN);
-
 app.post('/upload', upload.single('file'), async (req, res) => {
   const file = req.file;
   console.log('File received:', file);
 
   try {
+    // Log file details and environment variables
+    console.log('File details:', {
+      originalname: file.originalname,
+      path: file.path,
+      size: file.size
+    });
+    console.log('Environment Variable BLOB_READ_WRITE_TOKEN:', process.env.BLOB_READ_WRITE_TOKEN);
+
     const filePath = file.path;
     const fileContent = fs.readFileSync(filePath);
+    console.log('File content read successfully');
+
     const response = await put(file.originalname, fileContent, {
       access: 'public',
-      token: process.env.BLOB_READ_WRITE_TOKEN // Käytä ympäristömuuttujaa
+      token: process.env.BLOB_READ_WRITE_TOKEN
     });
+    console.log('Blob upload response:', response);
 
     // Poista väliaikainen tiedosto
     fs.unlinkSync(filePath);
+    console.log('Temporary file deleted');
 
     res.json({ url: response.url, blobId: response.blobId });
   } catch (error) {
     console.error('Upload failed:', error.message);
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ error: error.message, details: error });
   }
 });
 
