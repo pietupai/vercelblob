@@ -25,7 +25,6 @@ app.post('/api/upload', upload.single('file'), async (req, res) => {
   console.log('File received:', file);
 
   try {
-    // Log file details and environment variables
     console.log('File details:', {
       originalname: file.originalname,
       size: file.size
@@ -42,7 +41,14 @@ app.post('/api/upload', upload.single('file'), async (req, res) => {
     });
     console.log('Blob upload response:', response);
 
-    res.json({ url: response.url, blobId: response.blobId });
+    res.json({
+      url: response.url,
+      downloadUrl: response.downloadUrl,
+      pathname: response.pathname,
+      contentType: response.contentType,
+      contentDisposition: response.contentDisposition,
+      blobId: response.blobId || 'N/A'
+    });
   } catch (error) {
     console.error('Upload failed:', error.message);
     res.status(500).json({ error: error.message, details: error });
