@@ -14,6 +14,8 @@ app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));
 });
 
+console.log('BLOB_READ_WRITE_TOKEN:', process.env.BLOB_READ_WRITE_TOKEN);
+
 app.post('/upload', upload.single('file'), async (req, res) => {
   const file = req.file;
   console.log('File received:', file);
