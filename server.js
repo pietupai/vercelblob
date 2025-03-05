@@ -1,12 +1,12 @@
 const express = require('express');
 const multer = require('multer');
-const fs = require('fs');
 const path = require('path');
 const { put } = require('@vercel/blob');
 require('dotenv').config();
 
 const app = express();
-const upload = multer({ dest: 'uploads/' });
+const storage = multer.memoryStorage();
+const upload = multer({ storage: storage });
 
 app.use(express.static(path.join(__dirname)));
 
@@ -20,7 +20,7 @@ app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));
 });
 
-app.post('/upload', upload.single('file'), async (req, res) => {
+app.post('/api/upload', upload.single('file'), async (req, res) => {
   const file = req.file;
   console.log('File received:', file);
 
@@ -28,14 +28,12 @@ app.post('/upload', upload.single('file'), async (req, res) => {
     // Log file details and environment variables
     console.log('File details:', {
       originalname: file.originalname,
-      path: file.path,
       size: file.size
     });
     console.log('Environment Variable BLOB_READ_WRITE_TOKEN:', process.env.BLOB_READ_WRITE_TOKEN);
     console.log('Token (inside try block):', process.env.BLOB_READ_WRITE_TOKEN);
 
-    const filePath = file.path;
-    const fileContent = fs.readFileSync(filePath);
+    const fileContent = file.buffer;
     console.log('File content read successfully');
 
     const response = await put(file.originalname, fileContent, {
@@ -43,10 +41,6 @@ app.post('/upload', upload.single('file'), async (req, res) => {
       token: process.env.BLOB_READ_WRITE_TOKEN
     });
     console.log('Blob upload response:', response);
-
-    // Poista väliaikainen tiedosto
-    fs.unlinkSync(filePath);
-    console.log('Temporary file deleted');
 
     res.json({ url: response.url, blobId: response.blobId });
   } catch (error) {
