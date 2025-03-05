@@ -2,14 +2,14 @@
   "version": 2,
   "builds": [
     {
-      "src": "api/server.js",
+      "src": "server.js",
       "use": "@vercel/node"
     }
   ],
   "routes": [
     {
       "src": "/api/upload",
-      "dest": "/api/server.js",
+      "dest": "server.js",
       "methods": ["POST"],
       "headers": {
         "Access-Control-Allow-Origin": "*",
@@ -19,7 +19,7 @@
     },
     {
       "src": "/test",
-      "dest": "/api/server.js",
+      "dest": "server.js",
       "methods": ["GET"]
     },
     {
