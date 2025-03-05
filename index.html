@@ -3,15 +3,17 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>File Upload</title>
+  <title>File Upload and Read</title>
 </head>
 <body>
-  <h1>Upload Your File</h1>
+  <h1>Upload and Read Your File</h1>
   <form id="uploadForm">
     <input id="fileInput" type="file" name="file" required>
     <button type="submit">Upload</button>
   </form>
+  <button id="readButton" style="margin-top: 20px;">Read Uploaded File</button>
   <p id="message"></p>
+  <p id="fileContent"></p>
   <script>
     document.getElementById('uploadForm').addEventListener('submit', async (event) => {
       event.preventDefault();
@@ -43,9 +45,31 @@
 
         const data = await response.json();
         document.getElementById('message').textContent = `File uploaded successfully: ${data.url}`;
+        localStorage.setItem('fileUrl', data.url); // Tallenna URL-osoite localStorageen
       } catch (error) {
         console.error('Error:', error);
         document.getElementById('message').textContent = 'An error occurred while uploading the file';
+      }
+    });
+
+    document.getElementById('readButton').addEventListener('click', async () => {
+      const fileUrl = localStorage.getItem('fileUrl');
+      if (!fileUrl) {
+        alert('No file uploaded');
+        return;
+      }
+
+      try {
+        const response = await fetch(fileUrl);
+        if (!response.ok) {
+          throw new Error('Failed to fetch file');
+        }
+
+        const fileContent = await response.text();
+        document.getElementById('fileContent').textContent = fileContent;
+      } catch (error) {
+        console.error('Error:', error);
+        document.getElementById('fileContent').textContent = 'An error occurred while reading the file';
       }
     });
   </script>
