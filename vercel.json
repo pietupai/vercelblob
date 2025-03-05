@@ -1,8 +1,30 @@
 {
-  "rewrites": [
+  "version": 2,
+  "builds": [
     {
-      "source": "/api/upload",
-      "destination": "/api/upload"
+      "src": "api/server.js",
+      "use": "@vercel/node"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/api/upload",
+      "dest": "/api/server.js",
+      "methods": ["POST"],
+      "headers": {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "POST",
+        "Access-Control-Allow-Headers": "Content-Type, Authorization, X-Requested-With"
+      }
+    },
+    {
+      "src": "/test",
+      "dest": "/api/server.js",
+      "methods": ["GET"]
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/index.html"
     }
   ]
 }
