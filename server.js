@@ -3,7 +3,7 @@ const multer = require('multer');
 const fs = require('fs');
 const path = require('path');
 const { put } = require('@vercel/blob');
-require('dotenv').config(); // Lataa .env-tiedosto
+require('dotenv').config();
 
 const app = express();
 const upload = multer({ dest: 'uploads/' });
@@ -21,7 +21,7 @@ app.post('/upload', upload.single('file'), async (req, res) => {
   try {
     const filePath = file.path;
     const fileContent = fs.readFileSync(filePath);
-    const { url, blobId } = await put(file.originalname, fileContent, {
+    const response = await put(file.originalname, fileContent, {
       access: 'public',
       token: process.env.BLOB_READ_WRITE_TOKEN // Käytä ympäristömuuttujaa
     });
@@ -29,7 +29,7 @@ app.post('/upload', upload.single('file'), async (req, res) => {
     // Poista väliaikainen tiedosto
     fs.unlinkSync(filePath);
 
-    res.json({ url, blobId });
+    res.json({ url: response.url, blobId: response.blobId });
   } catch (error) {
     console.error('Upload failed:', error.message);
     res.status(500).json({ error: error.message });
