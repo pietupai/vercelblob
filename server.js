@@ -10,6 +10,12 @@ const upload = multer({ dest: 'uploads/' });
 
 app.use(express.static(path.join(__dirname)));
 
+// Testisivu
+app.get('/test', (req, res) => {
+  console.log('Test endpoint hit');
+  res.send('<h1>Testisivu</h1><p>Palvelin toimii oikein</p>');
+});
+
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));
 });
@@ -26,6 +32,7 @@ app.post('/upload', upload.single('file'), async (req, res) => {
       size: file.size
     });
     console.log('Environment Variable BLOB_READ_WRITE_TOKEN:', process.env.BLOB_READ_WRITE_TOKEN);
+    console.log('Token (inside try block):', process.env.BLOB_READ_WRITE_TOKEN);
 
     const filePath = file.path;
     const fileContent = fs.readFileSync(filePath);
